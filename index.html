@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- 引入样式 -->
+  <!-- <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"> -->
+  <link rel="stylesheet" href="./element-ui.css">
+
+</head>
+
+<body>
+  <div id="app" v-cloak>
+    <div class="colorArea"></div>
+    <div class="app-container">
+
+      <div class="topArea">
+        <el-table :data="tableData" border max-height="100" class='tableArea'>
+          <el-table-column prop="date" label="网元" width="180">
+          </el-table-column>
+          <el-table-column prop="name" label="端口" width="180">
+          </el-table-column>
+
+          <el-table-column prop="descrip" label="描述" :show-overflow-tooltip="true">
+          </el-table-column>
+          <el-table-column prop="city" label="派单省份" width="80">
+          </el-table-column>
+
+          <el-table-column prop="address" label="计算结果" width="80">
+          </el-table-column>
+          <el-table-column label="操作" width="80">
+            <template slot-scope="scope">
+              <el-button @click.native.prevent="deleteRow(scope.$index, tableData)" type="text" size="small">
+                翻译
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="bodyArea">
+        <div class="bodyLeft">
+          <div class="whiteArea"></div>
+          <div id="complateText"></div>
+          <div id="outputFirstText"></div>
+          <div id="outputSecondText"></div>
+          <div id="outputThreeText"></div>
+          <div id="outputFourText"></div>
+          <div id="outputFiveText"></div>
+
+        </div>
+        <div class="bodyRight">
+          <div id="main" @click="oneByOne(1)">
+            <!-- <iframe class="ifSize" :src="iframeUrl" frameborder="0"></iframe> -->
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="colorArea"></div>
+
+
+  </div>
+
+</body>
+
+</html>
+<!-- 初始化样式 -->
+<style type="text/css">
+  /* #output::after {
+    content: '|';
+    animation: blink 1s infinite
+  } */
+  /* @keyframes blink {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  } */
+
+
+
+
+  .bodyArea {
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    height: 500px;
+    background-color: #fff;
+    /* background-color: #000; */
+    position: relative;
+    display: flex;
+  }
+
+  .whiteArea {
+    width: 100%;
+    height: 20px;
+    background-color: #001e3b;
+  }
+
+  .bodyLeft {
+    width: 26%;
+    height: 100%;
+    background-color: #001e3b;
+    overflow-y: scroll;
+    position: absolute;
+    left: 0;
+    z-index: 999;
+  }
+
+  .bodyRight {
+    width: 100%;
+    height: 100%;
+  }
+
+  #main {
+    width: 100%;
+    height: 100%;
+  }
+
+  #outputFirstText,
+  #outputSecondText,
+  #outputThreeText,
+  #outputFourText,
+  #outputFiveText {
+    color: white;
+    font-size: 16px;
+    width: 100%;
+    height: auto;
+    word-break: break-all;
+    display: none;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  #complateText {
+    background-color: #21252c;
+    color: white;
+    font-size: 16px;
+    width: 100%;
+    height: auto;
+    word-break: break-all;
+    font-size: 12px;
+    padding: 0 10px;
+  }
+
+  .colorArea {
+    width: 100%;
+    height: 20px;
+    background-image: linear-gradient(to right, #99c644, #0082c5);
+    /* 渐变色 */
+  }
+
+  .topArea {
+    width: 100%;
+    height: 100px;
+  }
+
+  .tableArea {
+    width: 100%;
+    height: 100px;
+  }
+
+  #app {
+    font-family: "Avenir", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #2c3e50;
+    background-color: #f0f2f5;
+  }
+
+  .app-container {}
+
+  * {
+    padding: 0;
+    margin: 0;
+  }
+
+  .el-main {
+    background-color: #e9eef3;
+    color: #333;
+    text-align: center;
+  }
+
+  .el-container:nth-child(5) .el-aside,
+  .el-container:nth-child(6) .el-aside {
+    line-height: 260px;
+  }
+
+  .el-container:nth-child(7) .el-aside {
+    line-height: 320px;
+  }
+
+  * {
+    padding: 0;
+    margin: 0;
+  }
+
+  .el-header,
+  .el-footer {
+    background-color: #b3c0d1;
+    color: #fff;
+    text-align: center;
+    line-height: 60px;
+  }
+
+  .el-aside {
+    background-color: #d3dce6;
+    color: #333;
+    text-align: center;
+    line-height: 200px;
+  }
+
+  .el-main {
+    background-color: #e9eef3;
+    color: #333;
+    text-align: center;
+  }
+
+  body>.el-container {
+    margin-bottom: 40px;
+  }
+
+  .el-container:nth-child(5) .el-aside,
+  .el-container:nth-child(6) .el-aside {
+    line-height: 260px;
+  }
+
+  .el-container:nth-child(7) .el-aside {
+    line-height: 320px;
+  }
+
+  body,
+  html {
+    width: 100%;
+    height: 100%;
+  }
+
+  * {
+    margin: 0;
+  }
+
+  html,
+  body {
+    border: 0;
+    font-family: "PingFang-SC-Regular", "Helvetica-Neue", "Helvetica", Arial,
+      sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    font-size: 0.13rem;
+    /* height: 100vh; */
+    /* overflow: hidden; */
+  }
+
+  [v-cloak] {
+    display: none;
+  }
+
+  .ifSize {
+    width: 100%;
+    height: 100%;
+  }
+
+  div,
+  span,
+  object,
+  iframe,
+  img,
+  table,
+  caption,
+  thead,
+  tbody,
+  tfoot,
+  tr,
+  tr,
+  td,
+  article,
+  aside,
+  canvas,
+  details,
+  figure,
+  hgroup,
+  menu,
+  nav,
+  footer,
+  header,
+  section,
+  summary,
+  mark,
+  audio,
+  video {
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  blockquote,
+  pre,
+  a,
+  abbr,
+  address,
+  cit,
+  code,
+  del,
+  dfn,
+  em,
+  ins,
+  q,
+  samp,
+  small,
+  strong,
+  sub,
+  sup,
+  b,
+  i,
+  hr,
+  dl,
+  dt,
+  dd,
+  ol,
+  ul,
+  li,
+  fieldset,
+  legend,
+  label {
+    border: 0;
+    vertical-align: baseline;
+    margin: 0;
+    padding: 0;
+  }
+
+  article,
+  aside,
+  canvas,
+  figure,
+  figure img,
+  figcaption,
+  hgroup,
+  footer,
+  header,
+  nav,
+  section,
+  audio,
+  video {
+    display: block;
+  }
+
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .table>caption {
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  .table>th {
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  .table>td {
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  li {
+    list-style: none;
+  }
+
+  a {
+    text-decoration: none;
+    /* outline: 0 none; */
+  }
+
+  /* a img {
+  border: 0;
+} */
+
+  /* :focus {
+  outline: 0;
+} */
+
+  * {
+    box-sizing: border-box;
+  }
+
+  /* textarea {
+  resize: none;
+  appearance: none;
+} */
+  .textMyclass {}
+
+  .alert-content :global(input) {
+    border: 1px solid #dfdfdf;
+    padding: 0px 0;
+    background: #fff;
+    border-radius: 3px;
+    padding-left: 5px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-transition: border-color ease-in-out 0.15s,
+      -webkit-box-shadow ease-in-out 0.15s;
+    -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  }
+
+  .alert-content :global(input:focus) {
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+      0 0 8px rgba(102, 175, 233, 0.6);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+      0 0 8px rgba(102, 175, 233, 0.6);
+  }
+
+  .alert-content :global(select) {
+    margin-top: 5px;
+    height: 23px;
+    width: 132px;
+    border: 1px solid #dfdfdf;
+    background-color: #fff;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+    /* Chrome Safari */
+  }
+
+  i {
+    font-style: normal;
+  }
+
+
+  .el-table__body-wrapper .is-scrolling-none {
+    height: auto !important;
+  }
+
+  .el-table::before {
+    height: 0px !important;
+  }
+</style>
+
+<script src="./vue.min.js"></script>
+<!-- <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js"></script> -->
+<script src="./jquery-1.8.3.min.js"></script>
+<script src="./element.js"></script>
+
+
+<script src="echarts.min.js"></script>
+<script src="china.js"></script>
+<script src="bmap.min.js"></script>
+
+
+
+<script type="text/javascript">
+  let app = new Vue({
+    el: '#app',
+    data() {
+      return {
+        isshowComplete: true,
+        iframeUrl: './map-shengfen.html',
+        tableData: [{
+            date: '网元名称1',
+            name: '端口1',
+            address: '计算结果',
+            descrip: '这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述',
+            city: '广东',
+          },
+          {
+            date: '网元名称2',
+            name: '端口2',
+            address: '计算结果',
+            city: '广东',
+            descrip: '这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述',
+          },
+          {
+            date: '网元名称3',
+            name: '端口3',
+            address: '计算结果',
+            descrip: '这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述',
+            city: '广东',
+          },
+          {
+            date: '网元名称4',
+            name: '端口4',
+            address: '计算结果',
+            descrip: '这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述',
+            city: '广东',
+          },
+          {
+            date: '网元名称4',
+            name: '端口4',
+            address: '计算结果',
+            descrip: '这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述',
+            city: '广东',
+          },
+          {
+            date: '网元名称4',
+            name: '端口4',
+            address: '计算结果',
+            descrip: '这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述',
+            city: '广东',
+          },
+          {
+            date: '网元名称4',
+            name: '端口4',
+            address: '计算结果',
+            descrip: '这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述,这是一个长的描述',
+            city: '广东',
+          },
+        ],
+
+        myChart: '',
+        chinaDatas: [
+          [{
+            name: '黑龙江',
+            value: 0,
+            price: 100,
+            num: 2
+          }],
+          [{
+            name: '内蒙古',
+            value: 0,
+            price: 100,
+            num: 2
+          }],
+          [{
+            name: '西藏',
+            value: 0,
+            price: 100,
+            num: 2
+          }],
+          [{
+            name: '四川',
+            value: 0,
+            price: 100,
+            num: 2
+          }],
+          [{
+            name: '重庆',
+            value: 0,
+            price: 100,
+            num: 2
+          }],
+          [{
+            name: '山东',
+            value: 0,
+            price: 100,
+            num: 2
+          }],
+          [{
+            name: '江西',
+            value: 0,
+            price: 100,
+            num: 2
+          }],
+          [{
+            name: '湖南',
+            value: 0,
+            price: 100,
+            num: 2
+          }],
+          [{
+            name: '贵州',
+            value: 0,
+            price: 100,
+            num: 2
+          }],
+          [{
+            name: '广西',
+            value: 0,
+            price: 100,
+            num: 2
+          }],
+          [{
+            name: '海南',
+            value: 0,
+            price: 100,
+            num: 2
+          }],
+
+        ],
+        chinaGeoCoordMap: {
+          '黑龙江': [127.9688, 45.368],
+          '内蒙古': [110.3467, 41.4899],
+          "吉林": [125.8154, 44.2584],
+          '北京市': [116.4551, 40.2539],
+          "辽宁": [123.1238, 42.1216],
+          "河北": [114.4995, 38.1006],
+          "天津": [117.4219, 39.4189],
+          "山西": [112.3352, 37.9413],
+          "陕西": [109.1162, 34.2004],
+          "甘肃": [103.5901, 36.3043],
+          "宁夏": [106.3586, 38.1775],
+          "青海": [101.4038, 36.8207],
+          "新疆": [87.9236, 43.5883],
+          "西藏": [91.11, 29.97],
+          "四川": [103.9526, 30.7617],
+          "重庆": [108.384366, 30.439702],
+          "山东": [117.1582, 36.8701],
+          "河南": [113.4668, 34.6234],
+          "江苏": [118.8062, 31.9208],
+          "安徽": [117.29, 32.0581],
+          "湖北": [114.3896, 30.6628],
+          "浙江": [119.5313, 29.8773],
+          "福建": [119.4543, 25.9222],
+          "江西": [116.0046, 28.6633],
+          "湖南": [113.0823, 28.2568],
+          "贵州": [106.6992, 26.7682],
+          "云南": [102.9199, 25.4663],
+          "广东": [113.12244, 23.009505],
+          "广西": [108.479, 23.1152],
+          "海南": [110.3893, 19.8516],
+          '上海': [121.4648, 31.2891]
+        },
+
+        ///data
+        ///data
+        ///data
+      }
+    },
+    components: {},
+    created() {
+
+    },
+    mounted() {
+      this.textFucntion()
+      //打字效果
+      // this.mapHtml()
+      // 基于准备好的dom，初始化echarts实例
+      // 指定图表的配置项和数
+
+      this.myChart = echarts.init(document.getElementById('main'));
+
+      let redName = '新疆';
+      var planePath =
+        'path://M.6,1318.313v-89.254l-319.9-221.799l0.073-208.063c0.521-84.662-26.629-121.796-63.961-121.491c-37.332-0.305-64.482,36.829-63.961,121.491l0.073,208.063l-319.9,221.799v89.254l330.343-157.288l12.238,241.308l-134.449,92.931l0.531,42.034l175.125-42.917l175.125,42.917l0.531-42.034l-134.449-92.931l12.238-241.308L1705';
+
+      var series = [];
+      [
+        ['北京市', this.chinaDatas]
+      ].forEach((item, i) => {
+        console.log('得到数据', item)
+        series.push({
+            type: 'lines',
+            zlevel: 2,
+            effect: {
+              // 括 'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'
+              show: true,
+              period: 1, //箭头指向速度，值越小速度越快
+              trailLength: 0.3, //特效尾迹长度[0,1]值越大，尾迹越长重
+              symbol: 'circle', //箭头图标
+              symbolSize: 3, //图标大小
+              color: "#fff"
+            },
+
+            lineStyle: {
+              normal: {
+                width: .9, //尾迹线条宽度
+                opacity: .5, //尾迹线条透明度
+                curveness: 0.2, //尾迹线条曲直度
+                color: function (params) { //圆环显示文字
+                  // console.log('redName',redName)
+
+                  return '#ffa022'
+
+                },
+              },
+              color: 'red'
+            },
+            tooltip: {
+              //  show:false,
+              trigger: 'item',
+              backgroundColor: 'rgba(8, 18, 42, 0.85)',
+              borderColor: '#040616',
+              showDelay: 0,
+              hideDelay: 0,
+              enterable: true,
+              transitionDuration: 0,
+              extraCssText: 'z-index:100',
+              formatter: function (params, ticket, callback) {
+                //根据业务自己拓展要显示的内容
+                //console.log('params--1',params)
+                let res = "";
+                let name = "北京-西宁64S0003IPBB/λ"
+                res = "<div style='color:#fff;'><span>电路：" + name + "</span><br/></div>";
+                let html =
+                  '<div class="mapTableContent"><div class="tableTop">北京 -> 新疆</div> <div class="tableList"> <div class="item itemTop"> <p>城市</p> <p>均价</p> <p>线路数</p> </div> <div class="item"> <p>新疆-1</p> <p>100</p> <p>1</p> </div> <div class="item"> <p>新疆-2</p> <p>200</p> <p>2</p> </div> </div> </div>'
+                if (name == redName) {
+                  return html;
+                } else {
+                  return res;
+                }
+              }
+            },
+            data: []
+          }, {
+            type: 'effectScatter',
+            coordinateSystem: 'geo',
+            zlevel: 2,
+            rippleEffect: { //涟漪特效
+              period: 10, //动画时间，值越小速度越快
+              brushType: 'fill', //波纹绘制方式 stroke, fill
+              scale: 2.2 //波纹圆环最大限制，值越大波纹越大
+            },
+            symbol: 'circle',
+            symbolSize: function (val) {
+              return 5; //圆环大小
+            },
+            itemStyle: {
+              normal: {
+                show: false,
+                color: function (params) { //圆环显示文字
+                  return '#ffa022'
+
+                },
+                borderWidth: 0,
+                shadowColor: '#b5e8fa', //发光🉐效果
+                shadowBlur: 4
+              }
+            },
+            data: item[1].map((dataItem) => {
+              return {
+                dataItem: dataItem,
+                name: dataItem[0].name,
+                value: this.chinaGeoCoordMap[dataItem[0].name].concat([dataItem[0].value])
+              };
+            }),
+          },
+
+        );
+      });
+
+      option = {
+        tooltip: {
+          //  show:false,
+          trigger: 'item',
+          backgroundColor: 'rgba(166, 200, 76, 0.82)',
+          borderColor: '#040616',
+          showDelay: 10,
+          hideDelay: 0,
+          enterable: true,
+          transitionDuration: 0,
+          extraCssText: 'z-index:100'
+        },
+        // backgroundColor: "#001339",
+        backgroundColor: '#001d3d',
+        // visualMap: { //图例值控制
+        //     min: 0,
+        //     max: 1,
+        //     calculable: true,
+        //     show: false,
+        //     color: ['#4fc6ef', '#4fc6ef', '#4fc6ef', '#4fc6ef', '#4fc6ef'],
+        //     textStyle: {
+        //         color: '#fff'
+        //     }
+        // },
+        geo: {
+          map: 'china',
+          zoom: !1,
+          label: {
+            emphasis: {
+              show: true
+            },
+            normal: {
+              show: !0,
+              fontSize: "10",
+              color: "#ffd768"
+            }
+          },
+          //roam: false, //是否允许缩放
+          itemStyle: {
+            normal: {
+              color: "#092765", //地图背景色
+              borderColor: '#6481a0', //省市边界线00fcff 516a89
+              borderWidth: 1
+            },
+            emphasis: {
+              color: 'rgba(37, 43, 61, .5)' //悬浮背景
+            }
+            //   normal: {
+            //     areaColor: '#132937',
+            //     borderColor: '#0692a4'
+            // },
+            // emphasis: {
+            //     areaColor: '#0b1c2d'
+            // }
+          }
+        },
+        series: series
+      };
+
+      // 使用刚指定的配置项和数据显示图表。
+      this.myChart.setOption(option);
+
+    },
+    methods: {
+      /**
+       * @description 点击翻译按钮
+       * @author 
+       * @since 20/05/20
+       */
+      deleteRow() {
+        this.$message({
+          message: '翻译中,请稍等',
+          type: 'success'
+        });
+        this.textFucntion()
+      },
+      /**
+       * @description 打字效果函数
+       * @author 
+       * @since 20/05/19
+       */
+      textFucntion() {
+        let testnum = 'Pos2/0/0'
+        let testnum2 = ''
+        let testnum3 = '北京-西宁64S0003IPBB/λ'
+        let testnum4 =''
+        let testnum5 = '甘肃省 宁夏回族自治区 内蒙古自治区 河北省 四川省 新疆维吾尔自治区 陕西省 山西省'
+        testnum5 = testnum5.replace(/\s/g, " → ")
+        const complateDom = document.getElementById('complateText')
+        const dom1 = document.getElementById('outputFirstText')
+        const dom2 = document.getElementById('outputSecondText')
+        const dom3 = document.getElementById('outputThreeText')
+        const dom4 = document.getElementById('outputFourText')
+        const dom5 = document.getElementById('outputFiveText')
+
+        dom1.innerHTML = "<div class='textMyclass'>input: " + testnum + "</div><br/>"
+        dom2.innerHTML = "<div class='textMyclass'>intput: " + testnum2 + "</div><br/>"
+        dom3.innerHTML = "<div class='textMyclass'>output: " + testnum3 + "</div><br/>"
+        dom4.innerHTML = "<div class='textMyclass'>output: " + testnum4 + "</div><br/>"
+        dom5.innerHTML = "<div class='textMyclass'>output: " + testnum5 + "</div><br/>"
+
+        let data = 'input:+Pos2/0/0 intput:To-BJBJ-BB-CMNET-RT01-TXP3D'
+        // let data ='input:+Pos2/0/0 intput:To-BJBJ-BB-CMNET-RT01-TXP3D-so-2/1/0-10G-[XNXG-BJST-64S0003IPBB] output:北京-西宁64S0003IPBB/λ  input:西宁新枢纽楼(西宁新枢纽楼(交通巷方向局间中继7期)-1-1-12-OP-1179649)分支1:《一干西部环/WDM40*10G-ZX-1/西宁局间中继(新枢纽楼-交通巷段)/λ6》西宁交通巷《一干西部环/WDM40*10G-ZX-2/兰西乌(兰州-西宁段)/λ37》兰州银滩《一干西部/WDM80*10G-ZX-3(银滩-海原新区)/λ46》海原站《一干西部/WDM80*10G-ZX-3(海原新区-银川开发区)/λ46》银川开发区《一干西部/WDM80*10G-ZX-3(银川开发区-临河)/λ8》巴彦淖尔临河站《一干西部/WDM80*10G-ZX-3(临河-移动二枢纽)/λ8》呼和浩特移动二枢纽《一干西部环/WDM40*10G-ZX-1/呼和浩特局间中继(移动一枢纽-移动二枢纽段)/λ18》呼和浩特移动一枢纽《一干西部环/WDM40*10G-ZX-2/京呼银兰(张家口-呼和浩特段)/λ32》张家口宝善街传输机房《一干西部环/WDM80*10G-ZX-1/京呼银兰(北京-张家口段)/λ53》北京望京 西宁新枢纽楼分支2:《一干西部环/WDM40*10G-ZX-1/西宁局间中继(新枢纽楼-枢纽楼段)/λ6》西宁枢纽楼《一干西部环/WDM40*10G-ZX-2/兰西乌(西宁-德令哈段)/λ38》德令哈站《一干西部环/WDM40*10G-ZX-2/兰西乌(德令哈-格尔木段)/λ38》格尔木站《一干西部环/WDM40*10G-ZX-2/兰西乌(格尔木-花土沟段)/λ25》花土沟站《一干西部环/WDM40*10G-ZX-2/兰西乌(花土沟-库尔勒段)/λ25》巴州地区库尔勒站《一干西部环/WDM40*10G-ZX-2/兰西乌(库尔勤-乌鲁木齐段)/λ25》乌鲁木齐南湖南路《一干西部环/WDM40*10G-ZX-1/乌鲁木齐局间中继(南湖-北京路段)/λ19》乌鲁木齐北京路新楼《一干西部环/WDM40*10G-ZX-2/兰乌(哈密-乌鲁木齐段)/λ24》哈密地区哈密站《一干西部环/WDM40*10G-ZX-2/兰乌(酒泉-哈密段)/λ24》酒泉站《一干西部环/WDM40*10G-ZX-2/兰乌(武威-酒泉段)/λ24》武威站《一干西部环/WDM40*10G-ZX-2/兰乌(兰州-武威段)/λ24》兰州雁滩《一干西部/WDM80*10G-ZX-3(天水-雁滩)/λ52》天水移动楼《一干西部/WDM80*10G-ZX-3(西安移动枢纽-天水)/λ52》西安移动枢纽《一干西部/WDM80*10G-ZX-6(西安移动枢纽-张家堡)/λ21》西安张家堡《一干西部环/WDM80*10G-ZX-1/京太西(运城-西安段)/λ68》运城移动枢纽楼《一干西部环/WDM80*10G-ZX-1/京太西(太原-运城段)/λ68》太原移动生产基地《一干西部/WDM80*10G-ZX-2(石家庄开发区-生产基地)/λ17》石家庄开发区移动大楼《石家庄局间中继(石家庄开发区-石家庄省公司段)/WDM80×10G-H-4/λ7》石家庄全球通大厦《京汉广(北京望京-石家庄省公司段)/WDM80×10G-H-7/λ20》(北京望京(张家口方向7期)-1-3-9-OP-1507329)北京望京～北京望京(N-北京望京(10Q100G)-H-OTM-1-1-0-39-V2T220-16)《一干东部环/WDM80*100G-H-2/(望京-三台段)/λ10/100G1/10G5》(N-北京三台(10Q100G)-H-OTM-1-1-0-56-V2T220-03)北京三台  output:甘肃省 宁夏回族自治区 内蒙古自治区 河北省 四川省 新疆维吾尔自治区 陕西省 山西省'
+
+        function writing(index) {
+          if (index < data.length) {
+            complateDom.innerHTML += data[index]
+            setTimeout(writing.bind(this), 0.1, ++index)
+          } else {
+            complateDom.innerHTML = ''
+            dom1.style = 'display:block;'
+            dom2.style = 'display:block;'
+            dom3.style = 'display:block;'
+            dom4.style = 'display:block;'
+            dom5.style = 'display:block;'
+
+          }
+        }
+        // this.content.innerHTML += `${arr[index]}<sup>(${pinyinData[index]})</sup>`
+        this.$nextTick(() => {
+          writing(0)
+        })
+      },
+      /**
+       * @description 地图总渲染方法
+       * @author 
+       * @since 20/05/19
+       */
+
+      oneByOne(data) {
+        var tempdata = []
+        for (var i = 0; i < data; i++) {
+          tempdata.push(this.chinaDatas[i])
+        }
+        this.myChart.setOption({
+          series: [{
+            data: this.convertData(tempdata)
+          }]
+        });
+        if (data < this.chinaDatas.length) {
+          setTimeout(() => {
+            this.oneByOne(data + 1)
+          }, 500)
+        }
+      },
+      convertData(data) {
+        var res = [];
+        var fromCoord = this.chinaGeoCoordMap[data[0][0].name];
+        var toCoord = fromCoord;
+        for (var i = 0; i < data.length; i++) {
+          var dataItem = data[i];
+          toCoord = this.chinaGeoCoordMap[dataItem[0].name];
+          if (fromCoord && toCoord) {
+            res.push([{
+              coord: fromCoord,
+              value: dataItem[0].value,
+            }, {
+              coord: toCoord,
+              dataItem: dataItem
+            }]);
+          }
+          fromCoord = toCoord;
+        }
+        return res;
+      },
+
+      //
+
+    }
+
+
+  })
+</script>
